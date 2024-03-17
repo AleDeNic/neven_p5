@@ -11,25 +11,33 @@ function draw() {
   let scaleFactor = 4;
   scale(scaleFactor);
   // variables
-  let centralPos = width / scaleFactor / 2; // where the lines start
-  let lineWidthVariation = 4; // how much the lines width can vary
+  let centralPosition = width / scaleFactor / 2; // where the lines start
+  let widthVariation = 4; // how much the lines width can vary
   let centralVariation = 4; // how much the lines are aligned to the center
   let fuzziness = 2; // how crazy the lines are
   let minWidth = 4; // minimum line width
   let maxWidth = 32; // maximum line width
   let lineWidth = int(random(minWidth, maxWidth + 1)); // first line width
+  let lateralLinesGutter = 4;
+  let lateralLinesMaxWidth = 8;
   // draw the lines
   for (let i = 1; i <= height / scaleFactor; i ++) {
-    // calculate the start and end position of the line
-    let startPosition = centralPos - int(lineWidth / 2) + plusMinus() * int(random(fuzziness + 1));
+    // draw the central line
+    let startPosition = centralPosition - int(lineWidth / 2) + plusMinus() * int(random(fuzziness));
     let endPosition = startPosition + lineWidth;
-    console.log(startPosition);
-    // draw the line
     drawLine(startPosition, endPosition, i);
+    // draw the left line
+    let startLeftPosition = startPosition - int(random(lateralLinesGutter)) - int(random(lateralLinesMaxWidth));
+    let endLeftPosition = startLeftPosition + int(random(lateralLinesMaxWidth));
+    drawLine(startLeftPosition, endLeftPosition, i);
+    //draw the right line
+    let startRightPosition = endPosition + int(random(lateralLinesGutter));
+    let endRightPosition = startRightPosition + int(random(lateralLinesMaxWidth));
+    drawLine(startRightPosition, endRightPosition, i);
     // update the line width and central position for the next line
-    lineWidth = lineWidth + plusMinus() * int(random(lineWidthVariation + 1));
+    lineWidth = lineWidth + plusMinus() * int(random(widthVariation));
     lineWidth = constrain(lineWidth, minWidth, maxWidth);
-    centralPos = centralPos + plusMinus() * int(random(centralVariation));
+    centralPosition = centralPosition + plusMinus() * int(random(centralVariation));
   }
 }
 
