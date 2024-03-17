@@ -1,6 +1,6 @@
 function setup() {
-  createCanvas(1200, 900);
-  //frameRate(1)
+  createCanvas(1600, 900);
+  //frameRate(2)
   noLoop()
   pixelDensity(4);
 }
@@ -10,16 +10,17 @@ function draw() {
   // set the dimension of the pixels
   let scaleFactor = 4;
   scale(scaleFactor);
-  // variables
+  // central line variables
   let centralPosition = width / scaleFactor / 2; // where the lines start
   let widthVariation = 4; // how much the lines width can vary
   let centralVariation = 4; // how much the lines are aligned to the center
-  let fuzziness = 2; // how crazy the lines are
-  let minWidth = 4; // minimum line width
-  let maxWidth = 32; // maximum line width
+  let fuzziness = 4; // how crazy the lines are
+  let minWidth = 8; // minimum line width
+  let maxWidth = 64; // maximum line width
   let lineWidth = int(random(minWidth, maxWidth + 1)); // first line width
-  let lateralLinesGutter = 4;
-  let lateralLinesMaxWidth = 8;
+  // lateral ines variables
+  let lateralLinesGutter = 4; // how much the lateral lines are far from the central line
+  let lateralLinesMaxWidth = 8; // maximum width of the lateral lines
   // draw the lines
   for (let i = 1; i <= height / scaleFactor; i ++) {
     // draw the central line
@@ -34,9 +35,9 @@ function draw() {
     let startRightPosition = endPosition + int(random(lateralLinesGutter));
     let endRightPosition = startRightPosition + int(random(lateralLinesMaxWidth));
     drawLine(startRightPosition, endRightPosition, i);
-    // update the line width and central position for the next line
-    lineWidth = lineWidth + plusMinus() * int(random(widthVariation));
-    lineWidth = constrain(lineWidth, minWidth, maxWidth);
+    // update the width of the next line
+    lineWidth = constrain(lineWidth + plusMinus() * int(random(widthVariation)), minWidth, maxWidth);
+    // update the central position of the next line
     centralPosition = centralPosition + plusMinus() * int(random(centralVariation));
   }
 }
