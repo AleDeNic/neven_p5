@@ -28,8 +28,8 @@ function draw() {
     let endPosition = startPosition + lineWidth;
     drawLine(startPosition, endPosition, i);
     // draw the left line
-    let startLeftPosition = startPosition - int(random(lateralLinesGutter)) - int(random(lateralLinesMaxWidth));
-    let endLeftPosition = startLeftPosition + int(random(lateralLinesMaxWidth));
+    let endLeftPosition = startPosition - int(random(lateralLinesGutter));
+    let startLeftPosition = endLeftPosition - int(random(lateralLinesMaxWidth));
     drawLine(startLeftPosition, endLeftPosition, i);
     //draw the right line
     let startRightPosition = endPosition + int(random(lateralLinesGutter));
