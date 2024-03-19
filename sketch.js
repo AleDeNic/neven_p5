@@ -1,84 +1,103 @@
 function setup() {
   createCanvas(1400, 800);
-  // frameRate(3)
-  noLoop()
+  noLoop();
   pixelDensity(4);
 }
 
 function draw() {
   background(200);
-  // set the dimension of the pixels
-  let scaleFactor = 4;
-  scale(scaleFactor);
-  // central line variables
-  let centralPosition = width / scaleFactor / 2; // where the lines start
-  let widthVariation = 16; // how much the lines width can vary
-  let centralVariation = 8; // how much the lines are aligned to the center
-  let fuzziness = 4; // how crazy the lines are
-  let minWidth = 4; // minimum line width
-  let maxWidth = 64; // maximum line width
-  let lineWidth = int(random(minWidth, maxWidth + 1)); // first line width
-  // factor to increase the variations
-  let lineWidthIncreaseFactor = 0;
-  let widthVariationIncreaseFactor = 0;
-  let fuzzIncreaseFactor = 0; // how crazy the lines progressively become
-  // lateral ines variables
-  let lateralLinesGutter = 4; // how much the lateral lines are far from the central line
-  let lateralLinesMaxWidth = 8; // maximum width of the lateral lines
-  // draw the lines
-  for (let i = 1; i <= height / scaleFactor; i ++) {
-    fuzziness += fuzzIncreaseFactor;
-    widthVariation += widthVariationIncreaseFactor;
-    minWidth += lineWidthIncreaseFactor;
-    maxWidth += lineWidthIncreaseFactor;
-    let flowColor = [30, 30, 210];
-    // draw the central line
-    let startPosition = centralPosition - int(lineWidth / 2) + plusMinus() * int(random(fuzziness));
-    let endPosition = startPosition + lineWidth;
-    drawLine(startPosition, endPosition, i, flowColor);
-    // draw the left line
-    let endLeftPosition = startPosition - int(random(lateralLinesGutter));
-    let startLeftPosition = endLeftPosition - int(random(lateralLinesMaxWidth));
-    drawLine(startLeftPosition, endLeftPosition, i, flowColor);
-    //draw the right line
-    let startRightPosition = endPosition + int(random(lateralLinesGutter));
-    let endRightPosition = startRightPosition + int(random(lateralLinesMaxWidth));
-    drawLine(startRightPosition, endRightPosition, i, flowColor);
-    // update the width of the next line
-    lineWidth = constrain(lineWidth + plusMinus() * int(random(widthVariation)), minWidth, maxWidth);
-    // update the central position of the next line
-    centralPosition += plusMinus() * int(random(centralVariation));
-  }
+  const pixelScaleFactor = 4;
+  scale(pixelScaleFactor); // set the dimension of the pixels
 
+  let fuzzIncreaseFactor = 0; // You can adjust these factors if needed
+
+  let centralPosition,
+    minWidth,
+    maxWidth,
+    centralVariation,
+    widthVariation,
+    fuzziness,
+    lateralLinesGutter,
+    lateralLinesMaxWidth;
+
+  // First set of lines
+  centralPosition = width / pixelScaleFactor / 2;
+  minWidth = 4;
+  maxWidth = 64;
+  centralVariation = 8;
+  widthVariation = 16;
+  fuzziness = 0;
+  lateralLinesGutter = 4;
+  lateralLinesMaxWidth = 8;
+  drawLineStream(
+    centralPosition,
+    centralVariation,
+    widthVariation,
+    fuzziness,
+    minWidth,
+    maxWidth,
+    lateralLinesGutter,
+    lateralLinesMaxWidth,
+    fuzzIncreaseFactor,
+  );
+
+  // Second set of lines
+  centralPosition = width / pixelScaleFactor / 2;
   fuzziness = 32;
   centralVariation = 6;
+  drawLineStream(
+    centralPosition,
+    centralVariation,
+    widthVariation,
+    fuzziness,
+    minWidth,
+    maxWidth,
+    lateralLinesGutter,
+    lateralLinesMaxWidth,
+    fuzzIncreaseFactor,
+  );
+}
 
-  for (let i = 1; i <= height / scaleFactor; i ++) {
+function drawLineStream(
+  centralPosition,
+  centralVariation,
+  widthVariation,
+  fuzziness,
+  minWidth,
+  maxWidth,
+  lateralLinesGutter,
+  lateralLinesMaxWidth,
+  fuzzIncreaseFactor,
+) {
+  for (let i = 1; i <= height / 4; i++) {
     fuzziness += fuzzIncreaseFactor;
-    widthVariation += widthVariationIncreaseFactor;
-    minWidth += lineWidthIncreaseFactor;
-    maxWidth += lineWidthIncreaseFactor;
     let flowColor = [30, 30, 210];
+
     // draw the central line
-    let startPosition = centralPosition - int(lineWidth / 2) + plusMinus() * int(random(fuzziness));
+    let lineWidth = int(random(minWidth, maxWidth + 1));
+    let startPosition =
+      centralPosition -
+      int(lineWidth / 2) +
+      plusMinus() * int(random(fuzziness));
     let endPosition = startPosition + lineWidth;
     drawLine(startPosition, endPosition, i, flowColor);
+
     // draw the left line
     let endLeftPosition = startPosition - int(random(lateralLinesGutter));
     let startLeftPosition = endLeftPosition - int(random(lateralLinesMaxWidth));
     drawLine(startLeftPosition, endLeftPosition, i, flowColor);
-    //draw the right line
+
+    // draw the right line
     let startRightPosition = endPosition + int(random(lateralLinesGutter));
-    let endRightPosition = startRightPosition + int(random(lateralLinesMaxWidth));
+    let endRightPosition =
+      startRightPosition + int(random(lateralLinesMaxWidth));
     drawLine(startRightPosition, endRightPosition, i, flowColor);
-    // update the width of the next line
-    lineWidth = constrain(lineWidth + plusMinus() * int(random(widthVariation)), minWidth, maxWidth);
-    // update the central position of the next line
-    centralPosition += plusMinus() * int(random(centralVariation));
+
+    centralPosition += plusMinus() * int(random(centralVariation)); // move the central position
   }
 }
 
-function drawLine (startPosition, endPosition, i, flowColor) {
+function drawLine(startPosition, endPosition, i, flowColor) {
   stroke(flowColor);
   strokeCap(SQUARE);
   line(startPosition, i, endPosition, i);
