@@ -37,7 +37,7 @@ function draw() {
 
   // Second set of lines
   centralPosition = width / pixelScaleFactor / 2;
-  fuzziness = 4;
+  fuzziness = 3;
   centralVariation = 8;
   drawLineStream(
     flowColor,
