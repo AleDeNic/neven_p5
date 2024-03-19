@@ -5,31 +5,25 @@ function setup() {
 }
 
 function draw() {
-  background(200);
-  const pixelScaleFactor = 4;
+  background(256);
+  const pixelScaleFactor = 6;
   scale(pixelScaleFactor); // set the dimension of the pixels
 
   let fuzzIncreaseFactor = 0; // You can adjust these factors if needed
 
-  let centralPosition,
-    minWidth,
-    maxWidth,
-    centralVariation,
-    widthVariation,
-    fuzziness,
-    lateralLinesGutter,
-    lateralLinesMaxWidth;
+  let flowColor = [0, 0, 0],
+    centralPosition = width / pixelScaleFactor / 2,
+    minWidth = 8,
+    maxWidth = 64,
+    centralVariation = 8,
+    widthVariation = 32,
+    fuzziness = 2,
+    lateralLinesGutter = 8,
+    lateralLinesMaxWidth = 16;
 
   // First set of lines
-  centralPosition = width / pixelScaleFactor / 2;
-  minWidth = 4;
-  maxWidth = 64;
-  centralVariation = 8;
-  widthVariation = 16;
-  fuzziness = 0;
-  lateralLinesGutter = 4;
-  lateralLinesMaxWidth = 8;
   drawLineStream(
+    flowColor,
     centralPosition,
     centralVariation,
     widthVariation,
@@ -43,9 +37,10 @@ function draw() {
 
   // Second set of lines
   centralPosition = width / pixelScaleFactor / 2;
-  fuzziness = 32;
-  centralVariation = 6;
+  fuzziness = 4;
+  centralVariation = 8;
   drawLineStream(
+    flowColor,
     centralPosition,
     centralVariation,
     widthVariation,
@@ -59,6 +54,7 @@ function draw() {
 }
 
 function drawLineStream(
+  flowColor,
   centralPosition,
   centralVariation,
   widthVariation,
@@ -71,7 +67,6 @@ function drawLineStream(
 ) {
   for (let i = 1; i <= height / 4; i++) {
     fuzziness += fuzzIncreaseFactor;
-    let flowColor = [30, 30, 210];
 
     // draw the central line
     let lineWidth = int(random(minWidth, maxWidth + 1));
