@@ -22,22 +22,8 @@ let flowField; // Array to store flow field vectors
 let particles = []; // Array to store particles
 let totalParticles = 400; // Total number of particles
 
-function preload() {
-  // Load the JPG image before setup
-  backgroundImage = loadImage(
-    "neven.jpg",
-    function (img) {
-      console.log("Image loaded successfully:", img);
-    },
-    function (err) {
-      console.error("Error loading image:", err);
-    },
-  );
-}
-
 function setup() {
   createCanvas(canvasWidth, canvasHeight); // Create a canvas with specified width and height
-  image(backgroundImage, 0, 0);
   //pixelDensity(1); // Set the pixel density for standard displays
 
   // Calculate number of columns and rows based on canvas width, height, and grid scale
