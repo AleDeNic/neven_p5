@@ -1,21 +1,44 @@
-// Define variables for grid dimensions, gridScale, and canvas size
-let columns, rows; // Number of columns and rows in the grid
-let gridScale = 20; // Scale of the grid
 let canvasWidth = 1400; // Width of the canvas
 let canvasHeight = 800; // Height of the canvas
+let backgroundColor = 255; // Background color of the canvas
 
-// Variables for controlling Perlin noise
-let noiseScale = 0.05; // Set the scale of the Perlin noise
+let backgroundImage; // Variable to store the background image
+
+let columns, rows; // Number of columns and rows in the grid
+let gridScale = 40; // Scale of the grid
+
+let noiseScale = 0.05; // Scale of the Perlin noise
 let noiseSpeed = 0.003; // Speed at which the noise changes over time
+
 let vectorMagnitude = 0.5; // Initial magnitude of the vectors
-let repulsionFactor = 2; // Adjust the repulsion strength
+
+let particleMaxSpeed = 1; // Maximum speed of particles
+let particleMinSize = 20; // Minimum size of particles
+let particleMaxSize = 40; // Maximum size of particles
+let repulsionFactor = 3; // Repulsion strength between particles
+let influenceRadius = 4; // How the particles are influenced by far away vectors (for smoothing)
 
 let flowField; // Array to store flow field vectors
 let particles = []; // Array to store particles
-let totalParticles = 300; // Total number of particles
+let totalParticles = 400; // Total number of particles
+
+function preload() {
+  // Load the JPG image before setup
+  backgroundImage = loadImage(
+    "neven.jpg",
+    function (img) {
+      console.log("Image loaded successfully:", img);
+    },
+    function (err) {
+      console.error("Error loading image:", err);
+    },
+  );
+}
 
 function setup() {
   createCanvas(canvasWidth, canvasHeight); // Create a canvas with specified width and height
+  image(backgroundImage, 0, 0);
+  //pixelDensity(1); // Set the pixel density for standard displays
 
   // Calculate number of columns and rows based on canvas width, height, and grid scale
   columns = floor(canvasWidth / gridScale);
@@ -24,43 +47,23 @@ function setup() {
   // Initialize flow field array
   flowField = new Array(columns * rows);
 
-  pixelDensity(1); // Set the pixel density for standard displays
-  noiseSeed(10); // Initialize Perlin noise offset
-
   // Initialize particles
   for (let i = 0; i < totalParticles; i++) {
-    let particleSize = random(10, 40); // Generate random size for each particle
+    let particleSize = int(random(particleMinSize, particleMaxSize)); // Generate random size for each particle
     particles.push(new Particle(particleSize));
   }
 }
 
 function draw() {
-  background(255); // Set background color to white
-
-  // Draw Perlin noise visualization
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < columns; x++) {
-      let posX = x * gridScale;
-      let posY = y * gridScale;
-      let noiseValue = noise(
-        x * noiseScale,
-        y * noiseScale,
-        frameCount * noiseSpeed,
-      );
-      let grayColor = map(noiseValue, 0, 1, 0, 255); // Map noise value to grayscale color
-      fill(grayColor);
-      noStroke();
-      rect(posX, posY, gridScale, gridScale);
-    }
-  }
+  background(backgroundColor); // Set background color
 
   // Calculate Perlin noise values for flow field
-  let yoff = 0;
+  let yOff = 0;
   for (let y = 0; y < rows; y++) {
-    let xoff = 0;
+    let xOff = 0;
     for (let x = 0; x < columns; x++) {
       let index = x + y * columns; // Calculate index in the flow field array
-      let angle = noise(xoff, yoff, frameCount * noiseSpeed) * TWO_PI * 4; // Calculate angle based on Perlin noise
+      let angle = noise(xOff, yOff, frameCount * noiseSpeed) * TWO_PI * 4; // Calculate angle based on Perlin noise
       let vector = p5.Vector.fromAngle(angle); // Create a 2D vector from the angle
       vector.setMag(vectorMagnitude); // Set the magnitude of the vector
       flowField[index] = vector; // Store the vector in the flow field array
@@ -74,10 +77,9 @@ function draw() {
         y * gridScale + gridScale / 2,
         gridScale / 2,
       ); // Draw the vector
-
-      xoff += noiseScale;
+      xOff += noiseScale;
     }
-    yoff += noiseScale;
+    yOff += noiseScale;
   }
 
   // Update and display particles
@@ -106,18 +108,14 @@ class Particle {
     this.pos = createVector(random(width), random(height)); // Initialize particle position randomly within canvas
     this.vel = createVector(0, 0); // Initialize particle velocity
     this.acc = createVector(0, 0); // Initialize particle acceleration
-    this.maxSpeed = 2; // Maximum speed of the particle
+    this.maxSpeed = particleMaxSpeed; // Maximum speed of the particle
     this.size = size; // Size of the particle
   }
 
-  // Function to steer particle based on flow field
   // Function to steer particle based on flow field with smoothing
   follow(flow) {
     let x = floor(this.pos.x / gridScale); // Calculate column index for flow field
     let y = floor(this.pos.y / gridScale); // Calculate row index for flow field
-
-    // Define a neighborhood radius for smoothing
-    let neighborhoodRadius = 8;
 
     // Initialize variables for summing vectors in the neighborhood
     let sumVector = createVector(0, 0);
@@ -125,13 +123,13 @@ class Particle {
 
     // Loop through the neighborhood
     for (
-      let yOffset = -neighborhoodRadius;
-      yOffset <= neighborhoodRadius;
+      let yOffset = -influenceRadius;
+      yOffset <= influenceRadius;
       yOffset++
     ) {
       for (
-        let xOffset = -neighborhoodRadius;
-        xOffset <= neighborhoodRadius;
+        let xOffset = -influenceRadius;
+        xOffset <= influenceRadius;
         xOffset++
       ) {
         let i = x + xOffset;
@@ -205,7 +203,6 @@ class Particle {
     } else if (this.pos.x < -this.size) {
       this.pos.x = width + this.size;
     }
-
     if (this.pos.y > height + this.size) {
       this.pos.y = -this.size;
     } else if (this.pos.y < -this.size) {
